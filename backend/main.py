@@ -11,7 +11,7 @@ app = FastAPI(
 # Allow React dev server (Vite runs on 5173, CRA on 3000)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000", "https://educators-amy-request-beaver.trycloudflare.com"],
+    allow_origins=["http://localhost:5173", "http://localhost:3000", "https://educators-amy-request-beaver.trycloudflare.com", "https://fortigate-dashboard-jn1q8tmor-tanmay-kads-projects.vercel.app"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
