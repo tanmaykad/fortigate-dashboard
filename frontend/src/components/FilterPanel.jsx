@@ -187,7 +187,7 @@ cursor-pointer
 }
 
   return (
-    <aside className="w-[420px] bg-slate-800 border-l border-slate-700 flex flex-col flex-shrink-0">
+    <aside className="w-[370px] bg-slate-800 border-l border-slate-700 flex flex-col flex-shrink-0">
 
       {/* Header */}
 
