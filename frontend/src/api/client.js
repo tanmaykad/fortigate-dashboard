@@ -5,13 +5,49 @@ const api = axios.create({
 })
 
 // Strip empty values from filter object before sending as query params
+
+const convertTo24Hour = (time, period) => {
+  if (!time) return "";
+
+  let [hour, minute] = time.split(":").map(Number);
+
+  if (period === "PM" && hour < 12)
+    hour += 12;
+
+  if (period === "AM" && hour === 12)
+    hour = 0;
+
+  return `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`;
+};
+
 const p = (filters = {}, extra = {}) => {
-  const params = { ...extra }
+  const params = { ...extra };
+
   Object.entries(filters).forEach(([k, v]) => {
-    if (v !== null && v !== undefined && v !== '') params[k] = v
-  })
-  return { params }
-}
+    if (v !== null && v !== undefined && v !== '') {
+      params[k] = v;
+    }
+  });
+
+  if (params.start_time) {
+    params.start_time = convertTo24Hour(
+      params.start_time,
+      params.start_period
+    );
+  }
+
+  if (params.end_time) {
+    params.end_time = convertTo24Hour(
+      params.end_time,
+      params.end_period
+    );
+  }
+
+  delete params.start_period;
+  delete params.end_period;
+
+  return { params };
+};
 
 // ── Summary ────────────────────────────────────────────────────────────────────
 export const getSummaryKPIs         = f           => api.get('/api/summary/kpis',                p(f))

@@ -18,11 +18,38 @@ export default function Summary() {
   const [eventTypes, setEventTypes] = useState([])
   const [loading,    setLoading]    = useState(true)
 
+  const getGranularity = () => {
+
+  if (!filters.start_date || !filters.end_date)
+    return 'day'
+
+  const start = new Date(
+    `${filters.start_date}T${filters.start_time || '00:00'}`
+  )
+
+  const end = new Date(
+    `${filters.end_date}T${filters.end_time || '23:59'}`
+  )
+
+  const hours = (end - start) / (1000 * 60 * 60)
+
+  if (hours <= 6)
+    return 'minute'
+
+  if (hours <= 48)
+    return 'hour'
+
+  if (hours <= 31 * 24)
+    return 'day'
+
+  return 'month'
+}
+
   useEffect(() => {
     setLoading(true)
     Promise.all([
       getSummaryKPIs(filters),
-      getEventsOverTime(filters, 'day'),
+      getEventsOverTime(filters, getGranularity()),
       getSeverityBreakdown(filters),
       getEventTypeBreakdown(filters),
     ]).then(([k, t, s, e]) => {
@@ -57,7 +84,7 @@ export default function Summary() {
             <XAxis dataKey="time_bucket" tick={{ fill:'#9ca3af', fontSize:11 }} />
             <YAxis tick={{ fill:'#9ca3af', fontSize:11 }} />
             <Tooltip {...TT} />
-            <Line type="monotone" dataKey="count" stroke="#3b82f6" dot={false} strokeWidth={2} />
+            <Line type="linear" dataKey="count" stroke="#3b82f6" dot={{ r: 3 }} activeDot={{ r: 6 }} strokeWidth={2} />
           </LineChart>
         </ResponsiveContainer>
       </div>
@@ -86,9 +113,25 @@ export default function Summary() {
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={eventTypes} layout="vertical">
               <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-              <XAxis type="number" tick={{ fill:'#9ca3af', fontSize:11 }} />
+              <XAxis
+  dataKey="time_bucket"
+  tick={{ fill: '#9ca3af', fontSize: 11 }}
+  tickFormatter={(value) => {
+    if (value.length === 16)
+      return value.substring(11)
+
+    if (value.length === 19)
+      return value.substring(11,16)
+
+    return value
+  }}
+/>
               <YAxis type="category" dataKey="event_subtype" width={65} tick={{ fill:'#9ca3af', fontSize:11 }} />
-              <Tooltip {...TT} />
+              <Tooltip
+  {...TT}
+  labelFormatter={(label) => `Time : ${label}`}
+  formatter={(value) => [`${value} Events`, 'Count']}
+/>
               <Bar dataKey="count" fill="#3b82f6" radius={[0,4,4,0]} />
             </BarChart>
           </ResponsiveContainer>

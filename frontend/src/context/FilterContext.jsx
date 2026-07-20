@@ -3,9 +3,18 @@ import { createContext, useContext, useState } from 'react'
 const FilterContext = createContext(null)
 
 const EMPTY = {
-  start_date: '', end_date: '',
-  event_type: '', severity: '',
-  src_ip: '',     dst_ip: '',
+  start_date: '',
+  start_time: '',
+  start_period: 'AM',
+
+  end_date: '',
+  end_time: '',
+  end_period: 'AM',
+
+  event_type: '',
+  severity: '',
+  src_ip: '',
+  dst_ip: '',
   protocol: '',
 }
 
