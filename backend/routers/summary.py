@@ -43,7 +43,17 @@ def events_over_time(
     q = db.query(FortigateEvent).filter(FortigateEvent.itime.isnot(None))
     q = apply_filters(q, FortigateEvent, filters)
 
-    fmt = "%Y-%m-%d %H:00:00" if granularity == "hour" else "%Y-%m-%d"
+    if granularity == "minute":
+     fmt = "%Y-%m-%d %H:%i"
+
+    elif granularity == "hour":
+     fmt = "%Y-%m-%d %H:00:00"
+
+    elif granularity == "month":
+     fmt = "%Y-%m"
+
+    else:
+     fmt = "%Y-%m-%d"
 
     rows = (
         q.with_entities(
